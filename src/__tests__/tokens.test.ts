@@ -7,7 +7,10 @@ import { contrast } from "./color";
 const RACINE = resolve(__dirname, "..", "..");
 const tokens = JSON.parse(readFileSync(join(RACINE, "tokens/tokens.json"), "utf8")) as {
   themes: Record<"dark" | "light", Record<string, string>>;
-  brands: Record<string, Record<"dark" | "light", Record<string, string>>>;
+  brands: Record<
+    string,
+    Record<"dark" | "light", Record<string, string>> & { static?: Record<string, string> }
+  >;
 };
 
 // Thèmes à contrôler : neutre sombre/clair + chaque marque (jetons de marque posés sur le thème neutre).
@@ -86,7 +89,7 @@ describe("marque omnes : charte « Business Review »", () => {
     expect(o.dark["primary-foreground"].toLowerCase()).toBe("#120432");
     expect(o.light.primary.toLowerCase()).toBe("#0014d0");
     expect(o.light["chart-slate"].toLowerCase()).toBe("#120432");
-    expect(o.static["font-sans-stack"]).toMatch(/^Arial,/);
+    expect(o.static?.["font-sans-stack"]).toMatch(/^Arial,/);
   });
 
   it("les séries et le primaire tiennent 3:1 sur la surface (éléments graphiques)", () => {
