@@ -42,7 +42,7 @@ export function Drawer({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") return onClose();
       if (e.key !== "Tab" || !panel.current) return;
-      const items = [...panel.current.querySelectorAll<HTMLElement>(FOCUSABLE)];
+      const items = Array.from(panel.current.querySelectorAll<HTMLElement>(FOCUSABLE));
       if (items.length === 0) return;
       const [a, z] = [items[0], items[items.length - 1]];
       if (e.shiftKey && document.activeElement === a) {
