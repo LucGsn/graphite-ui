@@ -1,5 +1,16 @@
 import { Activity, Clock, Gauge, Plus, Users } from "lucide-react";
-import { Badge, Button, Card, CardHeader, InfoTooltip, KpiGrid, KpiStat, StatusDot } from "graphite-ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  InfoTooltip,
+  KpiGrid,
+  KpiStat,
+  ProgressDots,
+  SaveIndicator,
+  StatusDot,
+} from "graphite-ui";
 import { Section, Variant } from "../components/section";
 import { ThemeSwitcher } from "../components/theme-switcher";
 import { MoreDemos } from "../components/more-demos";
@@ -219,6 +230,30 @@ export default function Page() {
           </div>
         </Section>
         <MoreDemos />
+
+        <Section
+          id="onboarding"
+          title="Onboarding et questionnaires"
+          description="Un questionnaire décrit en JSON (contrat versionné), affiché par OnboardingShell : une question ou une section par écran, écrans personnalisés, enregistrement et reprise, récapitulatif, écran de fin."
+        >
+          <div className="grid gap-6 sm:grid-cols-3">
+            <Variant name="ProgressDots · étape 3 sur 6">
+              <ProgressDots current={3} total={6} />
+            </Variant>
+            <Variant name="SaveIndicator">
+              <div className="flex flex-col gap-1">
+                <SaveIndicator status="saving" />
+                <SaveIndicator status="saved" />
+                <SaveIndicator status="error" />
+              </div>
+            </Variant>
+            <Variant name="démonstration complète">
+              <a href="/onboarding" className="text-sm underline underline-offset-4">
+                Ouvrir l&apos;onboarding de démonstration
+              </a>
+            </Variant>
+          </div>
+        </Section>
 
         <Section
           id="exemples"

@@ -12,6 +12,8 @@ export function textPairs(t: Tokens): { name: string; ratio: number }[] {
   const pairs: [string, string, string, string?][] = [
     // [nom, texte, fond, fond sous-jacent]
     ["foreground sur background", t.foreground, t.background],
+    ["danger (message d'erreur) sur background", t.danger, t.background],
+    ["danger (message d'erreur) sur card", t.danger, t.card],
     ["muted sur background", t.muted, t.background],
     ["faint sur background", t.faint, t.background],
     ["faint-60 sur background", t["faint-60"], t.background],

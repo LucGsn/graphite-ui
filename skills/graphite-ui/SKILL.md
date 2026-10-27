@@ -80,7 +80,16 @@ Une marque ne change que 2 à 6 tokens (`--primary`, `--primary-foreground`, 1 �
 
 puis `<html data-brand="monprojet">`. Vérifier ≥ 4,5:1 entre `--primary-foreground` et `--primary`. Un exemple fourni : `tokens/theme-omnes.css` (charte « Business Review » : #120432, #0014D0, #3BC2A2, police Arial).
 
-## 7. Avant de rendre
+## 7. Onboarding et questionnaires
+
+Pour tout parcours qui pose des questions (onboarding, inscription, qualification, enquête) : **ne pas coder les écrans à la main**. Décrire un questionnaire en JSON (contrat versionné : choix unique ou multiple, échelle, texte court ou long, nombre, date, classement ; affichage conditionnel `showIf` avec `all` / `any`), le **valider**, puis l'afficher avec `OnboardingShell` (une question ou une section par écran, écrans personnalisés intercalés, enregistrement et reprise, récapitulatif, écran de fin).
+
+- Composants et props : [reference/components.md](reference/components.md#onboarding-et-questionnaires). Page prête à copier : `examples/onboarding.tsx`.
+- Contrat, validation, **boucle de génération par une IA** (générer → `validateQuestionnaire` → corriger les erreurs signalées → revalider) et **modèle de prompt** : [reference/questionnaire.md](reference/questionnaire.md). Schéma : `reference/questionnaire.schema.json`. Exemple conforme : `examples/questionnaire.example.json`.
+- Règles : le questionnaire ne contient ni code ni couleur (les icônes sont des clés résolues par `iconMap`) ; un document qui n'a pas passé `validateQuestionnaire` ne s'affiche jamais ; le contrat s'importe sans React depuis `graphite-ui/questionnaire`.
+- Écran : un seul bouton plein (« Continuer »), désactivé tant que la réponse manque ; la couleur n'apparaît que pour les messages d'erreur (point et texte), jamais sur les choix.
+
+## 8. Avant de rendre
 
 - [ ] Aucune couleur en dur ni classe de couleur brute.
 - [ ] Couleur uniquement sur statuts et séries ; chaque statut a un mot.
@@ -88,3 +97,4 @@ puis `<html data-brand="monprojet">`. Vérifier ≥ 4,5:1 entre `--primary-foreg
 - [ ] Chaque graphique : `label`, légende écrite, valeurs lisibles.
 - [ ] Une seule action primaire ; `IconButton` avec `label`.
 - [ ] Rendu vérifié en sombre **et** en clair, à 1440 et 375 px.
+- [ ] Questionnaire : document passé par `validateQuestionnaire`, parcours testé au clavier (Tab, flèches, Entrée) et à 375 px.

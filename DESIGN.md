@@ -138,3 +138,26 @@ List de ListRow
 ## 6. Accessibilité
 
 Navigation entière au clavier ; focus visible (anneau 2 px) ; `aria-current="page"` sur la page courante ; onglets avec flèches ; tiroir modal avec focus piégé puis restitué ; tableaux légendés avec `aria-sort` ; graphiques : `figure` étiqueté + tableau masqué ; infobulles reliées par `aria-describedby`.
+
+## 7. Onboarding et questionnaires
+
+Un parcours qui pose des questions reprend le langage de la page : gris neutres, aucune couleur sur les choix, un seul bouton plein. Il se décrit en JSON (le **questionnaire**, contrat versionné) et s'affiche par `OnboardingShell` : le contenu est une donnée, jamais du code d'écran.
+
+### Principes
+
+- **Une chose à la fois.** Une question par écran par défaut (titre centré, réponse, bouton) ; une section par écran quand les questions vont ensemble. Le titre est la question.
+- **Progression lisible.** Barre en haut au centre : points pour le passé, pilule pour l'étape courante, futur masqué (au-delà de 12 étapes : pilule et « n / total »). Seules comptent les étapes visibles : une question masquée par `showIf` ne figure pas dans la barre.
+- **Un seul appel à l'action**, collé en bas : « Continuer », **désactivé tant que la réponse obligatoire manque**. Une question facultative vide propose « Passer ». « Précédent » conserve les réponses. Dernière étape : « Envoyer mes réponses ».
+- **Choix : puces ou cartes.** Puces (pilules, réponses courtes, centrées) ou cartes empilées (options avec description). Sélection = bordure pleine + coche ; jamais la couleur seule, jamais de teinte de marque ni de statut. Icône (clé résolue par l'app) et description facultatives ; « Autre, préciser » ouvre un champ libre ; `maxChoices` désactive les options restantes et le dit (« 3 sur 3 choisis »).
+- **Validation à voix basse.** Le format est contrôlé dès la saisie (message sous le champ, en `danger`, avec le texte : jamais la couleur seule) ; « obligatoire » n'apparaît qu'en quittant un champ vide. Aucune erreur affichée à l'ouverture d'un écran.
+- **Enregistrer et reprendre.** Enregistrement automatique temporisé, indicateur discret en haut à droite (« Enregistrement… », « Enregistré », « Échec » + « Réessayer »), bouton « Enregistrer et reprendre plus tard » sous l'action. Le brouillon est versionné ; une étape ou une réponse disparue est ignorée à la reprise.
+- **Récapitulatif puis fin.** Les réponses par section, chacune avec « Modifier » ; l'envoi n'inclut que les questions visibles ; l'écran de fin est une confirmation centrée (coche, titre, une phrase, actions).
+- **Écrans personnalisés.** Accueil, transition, démonstration, paiement… viennent de l'app et s'intercalent n'importe où ; ils suivent les mêmes règles (un titre, un seul bouton plein, tokens).
+
+### Contrat
+
+`schemaVersion`, `id`, `title`, `sections[]` → `questions[]`. Huit types : `single`, `multiple`, `scale`, `short`, `long`, `number`, `date`, `ranking`. Affichage conditionnel : `showIf` avec `equals`, `in`, `notEmpty`, `gt`, `lt`, `contains`, combinables en `{ all }` / `{ any }`, sur des questions précédentes. `validateQuestionnaire` (importable sans React depuis `graphite-ui/questionnaire`) renvoie les erreurs avec leur chemin ; c'est le garde-fou d'un questionnaire généré par une IA. Détail, boucle de génération et modèle de prompt : `skills/graphite-ui/reference/questionnaire.md`.
+
+### Mobile et accessibilité
+
+Cibles de 44 px minimum, champs à 16 px (pas de zoom iOS), bouton collé en bas avec marge de zone sûre, un seul `h1` par écran qui reçoit le focus à chaque changement d'étape. Choix = boutons radio et cases natifs (flèches, Espace), classement = boutons monter / descendre (annoncés), erreurs reliées au champ (`aria-describedby`, `role="alert"`), indicateur d'enregistrement en `role="status"`, `prefers-reduced-motion` respecté. Vérifié par axe-core (rendu et navigateur, contraste 4,5:1 en sombre et en clair).

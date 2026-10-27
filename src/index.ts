@@ -38,3 +38,18 @@ export {
 export { BarChart, type BarChartProps, type BarDatum } from "./components/bar-chart";
 export { LineChart, type LineChartProps, type LineSeries, type LineRow } from "./components/line-chart";
 export { Treemap, type TreemapProps, type TreemapItem } from "./components/treemap";
+
+// Onboarding et questionnaires (contrat pur : voir aussi « graphite-ui/questionnaire », sans React)
+export * from "./lib/questionnaire";
+export {
+  OnboardingShell,
+  type OnboardingShellProps,
+  type CustomStep,
+  type CustomStepContext,
+} from "./components/onboarding-shell";
+export { QuestionnaireRenderer, type QuestionnaireRendererProps } from "./components/questionnaire-renderer";
+export { QuestionField, type QuestionFieldProps, type IconMap } from "./components/question-field";
+export { ProgressDots, type ProgressDotsProps } from "./components/progress-dots";
+export { SaveIndicator, type SaveIndicatorProps, type SaveStatus } from "./components/save-indicator";
+export { ReviewSummary, formatAnswer, type ReviewSummaryProps } from "./components/review-summary";
+export { CompletionScreen, type CompletionScreenProps } from "./components/completion-screen";
