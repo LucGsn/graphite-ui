@@ -3,7 +3,7 @@
 ## Mécanique
 
 - **Thème** : attribut `data-theme` sur `<html>` — `dark` (défaut, référence) ou `light`.
-- **Marque** : attribut `data-brand` sur `<html>` — absent = neutre ; `omnes` = thème d'exemple fourni.
+- **Marque** : attribut `data-brand` sur `<html>` — absent = neutre ; `omnes` = thème de la charte « Business Review » (violet nuit `#120432`, bleu électrique `#0014D0`, vert menthe `#3BC2A2`, police Arial ; Inter reste la police par défaut du cœur).
 - Les deux se combinent : `<html data-theme="light" data-brand="omnes">`.
 - Les tokens sont des variables CSS ; Tailwind v4 les expose en classes (`bg-card`, `text-muted`…) via `src/styles/theme.css`.
 
@@ -25,6 +25,8 @@ Une marque **ne change que quelques tokens** (≤ 6 par mode) : le primaire et, 
 2. `npm run tokens` — génère `src/styles/themes/monprojet.css`.
 3. `npm test` — vérifie le contraste (≥ 4,5:1) des 13 paires de texte dans chaque combinaison, et que la marque ne dépasse pas 6 tokens.
 4. Poser `data-brand="monprojet"` sur `<html>`.
+
+Une marque peut aussi poser des variables indépendantes du mode (ex. la police) dans un bloc `static` : `"static": { "font-sans-stack": "Arial, sans-serif" }`.
 
 ### Dans une app qui consomme le paquet (sans toucher à ce dépôt)
 

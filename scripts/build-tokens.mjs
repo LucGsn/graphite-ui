@@ -31,7 +31,9 @@ writeFileSync(resolve(racine, "src/styles/tokens.css"), tokens);
 
 mkdirSync(resolve(racine, "src/styles/themes"), { recursive: true });
 for (const [nom, b] of Object.entries(t.brands)) {
-  const css = `${entete}
+  // Variables propres à la marque, indépendantes du mode (ex. police).
+  const statique = b.static ? `\n[data-brand="${nom}"] {\n${vars(b.static)}\n}\n` : "";
+  const css = `${entete}${statique}
 [data-brand="${nom}"],
 [data-brand="${nom}"][data-theme="dark"] {
 ${vars(b.dark)}

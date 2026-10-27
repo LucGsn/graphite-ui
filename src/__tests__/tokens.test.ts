@@ -79,6 +79,25 @@ describe("thèmes de marque", () => {
   });
 });
 
+describe("marque omnes : charte « Business Review »", () => {
+  const o = tokens.brands.omnes;
+  it("reprend les trois couleurs de la charte et la police Arial", () => {
+    expect(o.dark.primary.toLowerCase()).toBe("#3bc2a2");
+    expect(o.dark["primary-foreground"].toLowerCase()).toBe("#120432");
+    expect(o.light.primary.toLowerCase()).toBe("#0014d0");
+    expect(o.light["chart-slate"].toLowerCase()).toBe("#120432");
+    expect(o.static["font-sans-stack"]).toMatch(/^Arial,/);
+  });
+
+  it("les séries et le primaire tiennent 3:1 sur la surface (éléments graphiques)", () => {
+    for (const [nom, t] of THEMES.filter(([n]) => n.startsWith("omnes/")))
+      for (const k of ["primary", "chart-green", "chart-slate"]) {
+        const ratio = contrast(t[k], t.background);
+        expect(ratio, `${nom} : ${k} sur background = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(3);
+      }
+  });
+});
+
 describe("génération", () => {
   it("tokens.css et themes/*.css sont à jour avec tokens.json", () => {
     const lire = () =>
