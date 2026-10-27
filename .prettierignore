@@ -4,3 +4,4 @@ docs/captures
 package-lock.json
 src/styles/tokens.css
 src/styles/themes
+skills/graphite-ui/tokens
