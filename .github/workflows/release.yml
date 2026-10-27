@@ -1,46 +1,75 @@
 name: Release
 
 # Deux déclencheurs :
-# - un tag vX.Y.Z poussé crée la release ;
-# - un lancement manuel (onglet Actions → Release → Run workflow) crée le tag ET la release
-#   à partir de la branche choisie.
-# Dans les deux cas, la release contient le skill Claude prêt à importer dans claude.ai.
+# - un tag vX.Y.Z poussé ;
+# - un lancement manuel (onglet Actions → Release → Run workflow, sur main) qui crée le tag ET la release.
+# Dans les deux cas : le paquet @lucgsn/graphite-ui est publié sur GitHub Packages (registre npm privé),
+# puis la release GitHub est créée avec le skill Claude (zip) prêt à importer dans claude.ai.
+# La version demandée DOIT être celle de package.json : sinon le workflow s'arrête avant de rien publier.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
       version:
-        description: "Version à publier (ex. 0.3.0 ou v0.3.0)"
+        description: "Version à publier, celle de package.json (ex. 0.3.0 ou v0.3.0)"
         required: true
         type: string
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Déterminer le tag
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: "@lucgsn"
+      - name: Déterminer le tag et contrôler la version
         env:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+              echo "Une publication se lance depuis main (branche actuelle : $GITHUB_REF_NAME)." >&2
+              exit 1
+            fi
             TAG="v${INPUT_VERSION#v}"
           else
             TAG="$GITHUB_REF_NAME"
           fi
-          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$'; then
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
             echo "Version invalide : $TAG" >&2
             exit 1
           fi
+          VERSION="${TAG#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$VERSION" != "$PKG_VERSION" ]; then
+            echo "La version demandée ($VERSION) n'est pas celle de package.json ($PKG_VERSION) : corriger package.json (et CHANGELOG.md), fusionner, puis relancer." >&2
+            exit 1
+          fi
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - name: Archive du skill (dossier graphite-ui/ à la racine du zip)
         run: |
           cd skills
           zip -r "../graphite-ui-skill-${TAG}.zip" graphite-ui
+      - name: Publier le paquet sur GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "::notice::$NAME@$VERSION est déjà publié : publication du paquet ignorée."
+          else
+            # Une préversion (1.0.0-rc.1) ne devient pas la version « latest ».
+            case "$VERSION" in *-*) npm publish --tag next ;; *) npm publish ;; esac
+          fi
       - name: Créer le tag et la release
         env:
           GH_TOKEN: ${{ github.token }}

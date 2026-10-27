@@ -1,10 +1,17 @@
 {
-  "name": "graphite-ui",
+  "name": "@lucgsn/graphite-ui",
   "version": "0.3.0",
   "description": "Design system neutre (gris purs, couleur réservée aux statuts et aux données) : tokens, composants React, skill Claude.",
-  "private": true,
   "type": "module",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucGsn/graphite-ui.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
   "workspaces": [
     "showcase"
   ],
@@ -21,10 +28,15 @@
   },
   "files": [
     "src",
+    "!src/__tests__",
+    "!src/components/__tests__",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
     "tokens",
     "skills",
     "DESIGN.md",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "tokens": "node scripts/build-tokens.mjs",
@@ -34,7 +46,8 @@
     "lint": "eslint . && prettier --check .",
     "test": "vitest run",
     "shots": "node scripts/screenshots.mjs",
-    "shots:onboarding": "node scripts/screenshots-onboarding.mjs"
+    "shots:onboarding": "node scripts/screenshots-onboarding.mjs",
+    "verify:install": "node scripts/verify-install.mjs"
   },
   "peerDependencies": {
     "react": "^19",

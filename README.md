@@ -13,16 +13,61 @@ Design system neutre, inspiré de Paperclip : gris purs, couleur réservée aux 
 
 Props et pièges : [skills/graphite-ui/reference/components.md](skills/graphite-ui/reference/components.md). Aucun texte ni donnée métier : tout est générique.
 
-## Installer dans une app Next.js existante (Tailwind v4)
+## Installer (dépôt et paquet privés)
 
-Le dépôt est privé : l'accès Git doit être configuré (`gh auth login`, ou une clé SSH). L'installation se fait **depuis Git, avec une version taguée** — jamais depuis le registre npm, où le nom `graphite-ui` appartient à un autre paquet.
+Le dépôt est privé. Le paquet est publié sur **GitHub Packages** (registre npm privé de GitHub) sous le nom `@lucgsn/graphite-ui`, à chaque release (Actions → Release). Il n'y a plus d'installation depuis Git, et rien n'est publié sur le registre npm public, où le nom `graphite-ui` appartient à un autre paquet.
+
+### 1. Créer un jeton en lecture seule
+
+GitHub → Settings → Developer settings → Personal access tokens → **Tokens (classic)** → _Generate new token (classic)_ ([GitHub Packages n'accepte que ces jetons](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry), pas les jetons « fine-grained »).
+
+- Nom : `graphite-ui (lecture)` ; expiration : 90 jours à 1 an (à renouveler avant l'échéance).
+- Cocher **uniquement `read:packages`**. Rien d'autre (surtout pas `repo` ni `write:packages`).
+- Le compte qui crée le jeton doit avoir accès au dépôt `LucGsn/graphite-ui` : le paquet hérite des droits du dépôt privé.
+- Copier le jeton une fois : GitHub ne le réaffiche pas. Ne jamais l'écrire dans un fichier du dépôt.
+
+### 2. En local
+
+Poser le jeton dans l'environnement du poste, hors de tout dépôt (ex. `~/.zshrc`) :
 
 ```bash
-npm install github:LucGsn/graphite-ui#v0.3.0 recharts
-# ou, en SSH : npm install git+ssh://git@github.com/LucGsn/graphite-ui.git#v0.3.0 recharts
+export NPM_TOKEN=<votre-jeton>
 ```
 
-`recharts` n'est nécessaire que pour `BarChart` et `LineChart`.
+Dans le projet qui consomme le paquet, créer (et **versionner**) un fichier `.npmrc` à la racine. Il ne contient aucun jeton, seulement la référence à la variable ([`.npmrc.example`](.npmrc.example)) :
+
+```ini
+@lucgsn:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NPM_TOKEN}
+```
+
+Installer avec un **alias**, pour que les imports restent `graphite-ui` :
+
+```bash
+npm install graphite-ui@npm:@lucgsn/graphite-ui@0.3.0 recharts
+```
+
+`package.json` contient alors `"graphite-ui": "npm:@lucgsn/graphite-ui@0.3.0"`, et tous les extraits ci-dessous (`transpilePackages`, `@import`, `@source`, imports) s'appliquent tels quels. Sans alias (`npm install @lucgsn/graphite-ui`), remplacer `graphite-ui` par `@lucgsn/graphite-ui` partout, y compris dans `@source "../node_modules/@lucgsn/graphite-ui/src"`.
+
+`recharts` n'est nécessaire que pour `BarChart` et `LineChart`. `NPM_TOKEN` doit être défini à chaque `npm install` / `npm ci` ; sinon npm répond « Failed to replace env in config: ${NPM_TOKEN} ».
+
+### 3. Sur Vercel (chaque projet qui consomme le paquet)
+
+1. Le `.npmrc` ci-dessus est dans le dépôt du projet (il ne contient pas de jeton).
+2. Vercel → le projet → **Settings → Environment Variables** → ajouter `NPM_TOKEN` = le jeton, cochée pour **Production, Preview et Development** (sans Preview, les déploiements de branches échouent), type _Sensitive_.
+3. Redéployer. L'installation de Vercel lit le `.npmrc` et la variable ; aucune autre commande n'est nécessaire.
+
+La vitrine de ce dépôt n'a **pas** besoin de `NPM_TOKEN` : elle importe `../src` directement. Dans les GitHub Actions d'un projet consommateur : `env: NPM_TOKEN: ${{ secrets.NPM_TOKEN }}` (secret du dépôt).
+
+### Dépannage
+
+| Message ou symptôme                                     | Cause probable                                                                                       |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `401 Unauthorized`                                      | `NPM_TOKEN` absent, expiré, révoqué, ou non défini pour cet environnement Vercel (Preview).          |
+| `404 Not Found - @lucgsn/graphite-ui`                   | Le compte du jeton n'a pas accès au dépôt, ou la ligne `@lucgsn:registry=…` manque dans le `.npmrc`. |
+| `Failed to replace env in config`                       | `NPM_TOKEN` n'est pas défini dans l'environnement qui lance npm.                                     |
+| Un autre paquet `graphite-ui` s'installe (ou 404 npmjs) | Installation sans alias ni scope : utiliser `graphite-ui@npm:@lucgsn/graphite-ui@<version>`.         |
+| `No matching version`                                   | Cette version n'est pas publiée (la 0.2.0 ne l'a jamais été : voir le [CHANGELOG](CHANGELOG.md)).    |
 
 **1. `next.config.ts`** — le paquet est livré en TypeScript :
 
@@ -81,7 +126,7 @@ export default function Page() {
 
 Dans un composant **serveur**, ne pas passer de fonction à un composant client : pour les graphiques, `unit="%"` plutôt que `formatValue`. Détails : [reference/components.md](skills/graphite-ui/reference/components.md#frontière-serveurclient).
 
-**Mettre à jour** : changer le tag dans `package.json` (`#v0.3.0`), puis `npm install`. Les versions sont des tags Git `vX.Y.Z` ; chaque tag crée une release GitHub (avec le zip du skill).
+**Mettre à jour** : changer la version dans `package.json` (`npm:@lucgsn/graphite-ui@0.4.0`), puis `npm install`. Les versions sont consignées dans le [CHANGELOG](CHANGELOG.md).
 
 ## Onboarding et questionnaires
 
@@ -107,6 +152,12 @@ npm run shots:onboarding   # parcours d'onboarding : captures + contrôle axe (c
 ```
 
 `tokens/tokens.json` est la source unique : `npm run tokens` en génère `src/styles/tokens.css`, `src/styles/themes/*.css` et les copies du skill ; un test échoue si l'un d'eux est périmé.
+
+## Publier une version
+
+1. Passer la version à `X.Y.Z` dans `package.json`, `showcase/package.json` et `package-lock.json` (les deux lignes `version` du lockfile), ajouter l'entrée du [CHANGELOG](CHANGELOG.md), ouvrir une PR vers `main`, CI verte, fusionner.
+2. GitHub → **Actions → Release → Run workflow** (branche `main`), saisir `X.Y.Z`.
+3. Le workflow vérifie que la version est celle de `package.json`, publie `@lucgsn/graphite-ui@X.Y.Z` sur GitHub Packages, crée le tag `vX.Y.Z` et la release avec le zip du skill (`graphite-ui-skill-vX.Y.Z.zip`). Une version déjà publiée n'est jamais republiée.
 
 ## Déployer la vitrine sur Vercel
 

@@ -88,4 +88,4 @@ Une page serveur ne peut pas passer une **fonction** à un composant client. Pou
 - **Aucun style / classes sans effet** : `@source "../node_modules/graphite-ui/src";` manque dans le CSS, ou son chemin relatif est faux.
 - **Erreur « Unexpected token » sur du TypeScript** : `transpilePackages: ["graphite-ui"]` manque dans `next.config`.
 - **Graphiques vides en test (jsdom)** : définir un `ResizeObserver` factice.
-- **Mauvais paquet installé** : vérifier que `package.json` référence `github:LucGsn/graphite-ui#vX.Y.Z` et non `"graphite-ui": "^…"` (autre paquet sur le registre npm).
+- **Mauvais paquet installé / 401 / 404** : `package.json` doit référencer `"graphite-ui": "npm:@lucgsn/graphite-ui@X.Y.Z"` (et non `"graphite-ui": "^…"`, autre paquet sur le registre npm public) ; le `.npmrc` doit contenir `@lucgsn:registry=https://npm.pkg.github.com` et `//npm.pkg.github.com/:_authToken=${NPM_TOKEN}` ; `NPM_TOKEN` (jeton classic `read:packages`) doit être défini en local et dans Vercel (Production, Preview, Development).
