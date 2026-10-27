@@ -36,7 +36,7 @@ export function parseColor(input: string): Rgba {
       r: parseInt(h.slice(0, 2), 16) / 255,
       g: parseInt(h.slice(2, 4), 16) / 255,
       b: parseInt(h.slice(4, 6), 16) / 255,
-      a: 1,
+      a: h.length === 8 ? parseInt(h.slice(6, 8), 16) / 255 : 1,
     };
   }
   const m = v.match(/^(oklch|oklab)\(([^)]+)\)$/);
@@ -64,4 +64,15 @@ export function contrast(fg: string, bg: string, under?: string): number {
   const front = over(parseColor(fg), back);
   const [hi, lo] = [luminance(front), luminance(back)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
+}
+
+/** Ajoute (ou remplace) l'opacité d'une couleur de token : `withAlpha("oklch(98% 0 0)", 0.8)`. */
+export function withAlpha(color: string, alpha: number): string {
+  const v = color.trim();
+  if (v.startsWith("#"))
+    return `${v.slice(0, 7)}${Math.round(alpha * 255)
+      .toString(16)
+      .padStart(2, "0")}`;
+  const sansAlpha = v.replace(/\s*\/[^)]*\)$/, ")");
+  return sansAlpha.replace(/\)$/, ` / ${alpha})`);
 }
