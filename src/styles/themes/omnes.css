@@ -1,16 +1,19 @@
 /* GÉNÉRÉ par scripts/build-tokens.mjs depuis tokens/tokens.json — ne pas modifier à la main. */
 
+[data-brand="omnes"] {
+  --font-sans-stack: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
 [data-brand="omnes"],
 [data-brand="omnes"][data-theme="dark"] {
-  --primary: oklch(80% 0.12 250);
-  --primary-foreground: oklch(20.5% 0 0);
-  --chart-green: #5eead4;
-  --chart-slate: #7c8ba1;
+  --primary: #3BC2A2;
+  --primary-foreground: #120432;
+  --chart-green: #3BC2A2;
 }
 
 [data-brand="omnes"][data-theme="light"] {
-  --primary: oklch(42% 0.15 255);
+  --primary: #0014D0;
   --primary-foreground: oklch(98.5% 0 0);
-  --chart-green: #0f766e;
-  --chart-slate: #475569;
+  --chart-green: #177d68;
+  --chart-slate: #120432;
 }

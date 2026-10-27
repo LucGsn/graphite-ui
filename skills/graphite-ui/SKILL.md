@@ -78,7 +78,7 @@ Une marque ne change que 2 à 6 tokens (`--primary`, `--primary-foreground`, 1 �
 }
 ```
 
-puis `<html data-brand="monprojet">`. Vérifier ≥ 4,5:1 entre `--primary-foreground` et `--primary`. Un exemple fourni : `tokens/theme-omnes.css` (teintes indicatives).
+puis `<html data-brand="monprojet">`. Vérifier ≥ 4,5:1 entre `--primary-foreground` et `--primary`. Un exemple fourni : `tokens/theme-omnes.css` (charte « Business Review » : #120432, #0014D0, #3BC2A2, police Arial).
 
 ## 7. Avant de rendre
 

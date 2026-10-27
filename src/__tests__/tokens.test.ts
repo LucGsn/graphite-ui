@@ -7,7 +7,10 @@ import { contrast } from "./color";
 const RACINE = resolve(__dirname, "..", "..");
 const tokens = JSON.parse(readFileSync(join(RACINE, "tokens/tokens.json"), "utf8")) as {
   themes: Record<"dark" | "light", Record<string, string>>;
-  brands: Record<string, Record<"dark" | "light", Record<string, string>>>;
+  brands: Record<
+    string,
+    Record<"dark" | "light", Record<string, string>> & { static?: Record<string, string> }
+  >;
 };
 
 // Thèmes à contrôler : neutre sombre/clair + chaque marque (jetons de marque posés sur le thème neutre).
@@ -75,6 +78,25 @@ describe("thèmes de marque", () => {
         const cles = Object.keys(b[mode]).filter((k) => !k.startsWith("$"));
         expect(cles.length, `${nom}/${mode}`).toBeLessThanOrEqual(6);
         for (const k of cles) expect(tokens.themes[mode], `${nom}/${mode}/${k}`).toHaveProperty(k);
+      }
+  });
+});
+
+describe("marque omnes : charte « Business Review »", () => {
+  const o = tokens.brands.omnes;
+  it("reprend les trois couleurs de la charte et la police Arial", () => {
+    expect(o.dark.primary.toLowerCase()).toBe("#3bc2a2");
+    expect(o.dark["primary-foreground"].toLowerCase()).toBe("#120432");
+    expect(o.light.primary.toLowerCase()).toBe("#0014d0");
+    expect(o.light["chart-slate"].toLowerCase()).toBe("#120432");
+    expect(o.static?.["font-sans-stack"]).toMatch(/^Arial,/);
+  });
+
+  it("les séries et le primaire tiennent 3:1 sur la surface (éléments graphiques)", () => {
+    for (const [nom, t] of THEMES.filter(([n]) => n.startsWith("omnes/")))
+      for (const k of ["primary", "chart-green", "chart-slate"]) {
+        const ratio = contrast(t[k], t.background);
+        expect(ratio, `${nom} : ${k} sur background = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(3);
       }
   });
 });
