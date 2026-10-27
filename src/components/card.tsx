@@ -1,10 +1,10 @@
 import * as React from "react";
 import { cn } from "../lib/cn";
 
-/** Carte : simple cadre (bordure blanc 10 %), fond transparent, arrondi 8 px, marge 16 px. */
+/** Carte : cadre fin (bordure), fond `card` (identique à la page en sombre, distinct en clair), arrondi 8 px, marge 16 px. */
 export const Card = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
   ({ className, ...props }, ref) => (
-    <section ref={ref} className={cn("min-w-0 rounded-lg border bg-transparent p-4", className)} {...props} />
+    <section ref={ref} className={cn("min-w-0 rounded-lg border bg-card p-4", className)} {...props} />
   ),
 );
 Card.displayName = "Card";

@@ -1,4 +1,4 @@
-// Règles de contraste du design system, appliquées à un jeu de tokens résolu (thème + marque ou palette).
+// Règles de contraste du design system, appliquées à un jeu de tokens résolu (thème + marque).
 //  - 4,5:1 pour TOUT texte, jetons de marque compris ;
 //  - 3:1 pour les éléments graphiques non textuels (séries de graphique, points de statut, fond du bouton plein).
 // Les bordures de cartes et de champs sont décoratives : le libellé identifie le contrôle (non couvertes).

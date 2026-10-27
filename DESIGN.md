@@ -46,7 +46,7 @@ Ce document dit **comment** utiliser le design system. Les valeurs vivent dans `
 
 Aucun texte sous 10 px (testé).
 
-**Thème clair** (`data-theme="light"`) : mêmes rôles, luminances inversées, chroma 0. Fond `98,5 %`, texte `20,5 %`, gris secondaire relevé à `44 %` pour tenir 4,5:1 sur fond clair. Statuts et séries assombris (`#16a34a`, `#d97706`…) pour rester lisibles. Le test de contraste couvre les 4 thèmes.
+**Thème clair** (`data-theme="light"`) : blanc chaud très subtil, façon Notion. Page `#FBFBFA`, **cartes en blanc pur** (distinctes de la page), barre latérale `#F7F6F3` ; les fonds ont une chroma ≤ 0,01. Texte `#37352F`, gris secondaire `#6B6A66`. Boutons, menu actif et bouton plein sont des **gris purs**, jamais beiges. Statuts et séries assombris (`#16a34a`, `#c76a06`…) pour tenir 3:1 sur la page et sur les cartes ; le texte tient 4,5:1. Le test de contraste couvre les 4 thèmes.
 
 **Thème de marque** : voir [docs/THEMING.md](docs/THEMING.md). Une marque ne change que quelques tokens (primaire, séries) ; elle ne touche jamais aux surfaces.
 

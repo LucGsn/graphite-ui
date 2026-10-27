@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { chroma, contrast } from "./color";
 import { violations } from "./rules";
 
 const RACINE = resolve(__dirname, "..", "..");
@@ -38,10 +39,32 @@ describe("tokens de référence (Paperclip, sombre)", () => {
     expect(d.field).toBe("oklab(1 0 0 / 0.045)");
   });
 
-  it("garde le cœur neutre : surfaces et textes à chroma 0", () => {
-    for (const [nom, t] of THEMES.slice(0, 2))
-      for (const k of ["background", "card", "sidebar", "accent", "foreground", "muted", "primary", "border"])
-        expect(t[k], `${nom}/${k}`).toMatch(/^oklch\([\d.]+% 0 0( \/ [\d.]+)?\)$/);
+  it("garde le cœur neutre en sombre : surfaces et textes à chroma 0", () => {
+    const t = tokens.themes.dark;
+    for (const k of ["background", "card", "sidebar", "accent", "foreground", "muted", "primary", "border"])
+      expect(t[k], k).toMatch(/^oklch\([\d.]+% 0 0( \/ [\d.]+)?\)$/);
+  });
+});
+
+describe("thème clair : blanc chaud très subtil", () => {
+  const t = tokens.themes.light;
+
+  it("fonds à chroma ≤ 0,01 et cartes en blanc pur", () => {
+    for (const k of ["background", "sidebar", "card"]) expect(chroma(t[k]), k).toBeLessThanOrEqual(0.01);
+    expect(t.card.toLowerCase()).toBe("#ffffff");
+  });
+
+  it("la carte se distingue de la page", () => {
+    expect(contrast(t.card, t.background)).toBeGreaterThanOrEqual(1.02);
+  });
+
+  it("boutons, menu actif, bouton plein, bordures et bande sont des gris purs (jamais beiges)", () => {
+    for (const k of ["accent", "field", "primary", "border", "input", "chart-band"])
+      expect(t[k], k).toMatch(/^(oklch\([\d.]+%|oklab\([\d.]+) 0 0( \/ [\d.]+)?\)$/);
+  });
+
+  it("la bande d'incertitude est un gris clair translucide", () => {
+    expect(t["chart-band"]).toMatch(/^oklch\(0% 0 0 \/ 0\.\d+\)$/);
   });
 });
 
