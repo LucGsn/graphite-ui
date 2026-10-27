@@ -27,9 +27,11 @@ export interface TreemapProps {
   className?: string;
 }
 
+/** Opacité (en %) de la teinte d'un bloc : 5 % (pâle) à 50 % (dense) ; plafonnée pour que le texte reste lisible (≥ 4,5:1, testé). */
+export const treemapOpacity = (i: number) => Math.round(5 + Math.min(1, Math.max(0, i)) * 45);
+
 /** Teinte d'un bloc : la couleur « série verte », plus ou moins dense selon l'intensité. */
-const tint = (i: number) =>
-  `color-mix(in oklab, var(--chart-green) ${Math.round(5 + Math.min(1, Math.max(0, i)) * 55)}%, transparent)`;
+const tint = (i: number) => `color-mix(in oklab, var(--chart-green) ${treemapOpacity(i)}%, transparent)`;
 
 /**
  * Carte proportionnelle : SURFACE = une grandeur (ex. la demande), INTENSITÉ = une autre (ex. la couverture).
@@ -74,7 +76,7 @@ export function Treemap({ items, ratio = 2, label, linkComponent: Link = "a", cl
             style={{ background: tint(it.intensity) }}
           >
             {showName && <p className="text-xs font-medium leading-tight">{it.label}</p>}
-            {showDetail && <p className="text-micro text-muted">{it.detail}</p>}
+            {showDetail && <p className="text-micro text-foreground">{it.detail}</p>}
           </div>
         );
         const pos = { left: `${r.x}%`, top: `${r.y}%`, width: `${r.w}%`, height: `${r.h}%` };

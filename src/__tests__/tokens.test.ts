@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { contrast } from "./color";
+import { violations } from "./rules";
 
 const RACINE = resolve(__dirname, "..", "..");
 const tokens = JSON.parse(readFileSync(join(RACINE, "tokens/tokens.json"), "utf8")) as {
@@ -45,30 +45,11 @@ describe("tokens de référence (Paperclip, sombre)", () => {
   });
 });
 
-describe("contraste ≥ 4,5:1 (WCAG AA)", () => {
-  for (const [nom, t] of THEMES) {
-    it(`${nom} : textes sur surfaces`, () => {
-      const cas: [string, string, string?][] = [
-        ["foreground", "background"],
-        ["muted", "background"],
-        ["faint", "background"],
-        ["faint-60", "background"],
-        ["foreground", "card"],
-        ["muted", "card"],
-        ["foreground", "sidebar"],
-        ["muted", "sidebar"],
-        ["faint-side", "sidebar"],
-        ["foreground", "accent"],
-        ["primary-foreground", "primary"],
-        ["foreground", "field", "background"],
-        ["muted", "field", "background"],
-      ];
-      for (const [fg, bg, under] of cas) {
-        const ratio = contrast(t[fg], t[bg], under ? t[under] : undefined);
-        expect(ratio, `${nom} : ${fg} sur ${bg} = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
-      }
+describe("contraste : 4,5:1 pour tout texte, 3:1 pour les éléments graphiques", () => {
+  for (const [nom, t] of THEMES)
+    it(`${nom} : aucune paire sous son seuil`, () => {
+      expect(violations(t)).toEqual([]);
     });
-  }
 });
 
 describe("thèmes de marque", () => {
@@ -90,14 +71,6 @@ describe("marque omnes : charte « Business Review »", () => {
     expect(o.light.primary.toLowerCase()).toBe("#0014d0");
     expect(o.light["chart-slate"].toLowerCase()).toBe("#120432");
     expect(o.static?.["font-sans-stack"]).toMatch(/^Arial,/);
-  });
-
-  it("les séries et le primaire tiennent 3:1 sur la surface (éléments graphiques)", () => {
-    for (const [nom, t] of THEMES.filter(([n]) => n.startsWith("omnes/")))
-      for (const k of ["primary", "chart-green", "chart-slate"]) {
-        const ratio = contrast(t[k], t.background);
-        expect(ratio, `${nom} : ${k} sur background = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(3);
-      }
   });
 });
 
