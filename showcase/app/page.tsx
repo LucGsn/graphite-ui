@@ -2,6 +2,7 @@ import { Activity, Clock, Gauge, Plus, Users } from "lucide-react";
 import { Badge, Button, Card, CardHeader, InfoTooltip, KpiGrid, KpiStat, StatusDot } from "graphite-ui";
 import { Section, Variant } from "../components/section";
 import { ThemeSwitcher } from "../components/theme-switcher";
+import { MoreDemos } from "../components/more-demos";
 
 const SURFACES = [
   ["background", "bg-background"],
@@ -216,6 +217,25 @@ export default function Page() {
               <InfoTooltip align="start" text="Explication alignée sur le bord gauche du bouton." />
             </span>
           </div>
+        </Section>
+        <MoreDemos />
+
+        <Section
+          id="exemples"
+          title="Exemples de pages"
+          description="Trois pages complètes dans la coque d'app."
+        >
+          <ul className="space-y-1 text-sm underline underline-offset-4">
+            <li>
+              <a href="/exemples/tableau-de-bord">Tableau de bord</a>
+            </li>
+            <li>
+              <a href="/exemples/liste">Liste</a>
+            </li>
+            <li>
+              <a href="/exemples/detail">Détail</a>
+            </li>
+          </ul>
         </Section>
       </main>
     </>

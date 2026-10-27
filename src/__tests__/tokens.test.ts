@@ -104,7 +104,11 @@ function fichiers(dossier: string, sortie: string[] = []): string[] {
   }
   return sortie;
 }
-const SOURCES = [...fichiers(join(RACINE, "src")), ...fichiers(join(RACINE, "showcase"))];
+const SOURCES = [
+  ...fichiers(join(RACINE, "src")),
+  ...fichiers(join(RACINE, "showcase")),
+  ...fichiers(join(RACINE, "skills")),
+];
 
 describe("discipline des couleurs", () => {
   it("aucune couleur en dur (hex, rgb, hsl) hors des tokens", () => {
@@ -126,5 +130,46 @@ describe("discipline des couleurs", () => {
       for (const m of readFileSync(f, "utf8").matchAll(/text-\[(\d+(?:\.\d+)?)px\]/g))
         if (Number(m[1]) < 10) fautifs.push(`${f} : ${m[0]}`);
     expect(fautifs).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Skill Claude : autonome, à jour et cohérent.
+// ---------------------------------------------------------------------------
+describe("skill graphite-ui", () => {
+  const dossier = join(RACINE, "skills/graphite-ui");
+  const skill = readFileSync(join(dossier, "SKILL.md"), "utf8");
+
+  it("a un frontmatter valide (name, description)", () => {
+    const m = skill.match(/^---\nname: ([a-z0-9-]+)\ndescription: (.+)\n---\n/);
+    expect(m, "frontmatter name/description").not.toBeNull();
+    expect(m![1]).toBe("graphite-ui");
+    expect(m![2].length).toBeGreaterThan(80);
+  });
+
+  it("embarque des tokens identiques à la source", () => {
+    expect(readFileSync(join(dossier, "tokens/tokens.json"), "utf8")).toBe(
+      readFileSync(join(RACINE, "tokens/tokens.json"), "utf8"),
+    );
+    expect(readFileSync(join(dossier, "tokens/tokens.css"), "utf8")).toBe(
+      readFileSync(join(RACINE, "src/styles/tokens.css"), "utf8"),
+    );
+  });
+
+  it("ne référence que des fichiers qui existent", () => {
+    for (const chemin of skill.match(/(?:examples|reference|tokens)\/[\w.-]+/g) ?? [])
+      expect(() => readFileSync(join(dossier, chemin)), chemin).not.toThrow();
+  });
+
+  it("tous les exemples n'importent que des composants exportés", async () => {
+    const exportes = Object.keys(await import("../index"));
+    for (const f of readdirSync(join(dossier, "examples"))) {
+      const src = readFileSync(join(dossier, "examples", f), "utf8");
+      const noms = [...src.matchAll(/import \{([^}]+)\} from "graphite-ui"/g)]
+        .flatMap((m) => m[1].split(","))
+        .map((s) => s.trim())
+        .filter((s) => s && !s.startsWith("type "));
+      for (const n of noms) expect(exportes, `${f} : ${n}`).toContain(n);
+    }
   });
 });

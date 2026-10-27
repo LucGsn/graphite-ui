@@ -44,3 +44,13 @@ ${vars(b.light)}
   writeFileSync(resolve(racine, `src/styles/themes/${nom}.css`), css);
 }
 console.log("tokens générés");
+
+// Copies embarquées dans le skill : il doit fonctionner sans accès au reste du dépôt.
+const skill = resolve(racine, "skills/graphite-ui/tokens");
+mkdirSync(skill, { recursive: true });
+writeFileSync(resolve(skill, "tokens.json"), readFileSync(resolve(racine, "tokens/tokens.json")));
+writeFileSync(resolve(skill, "tokens.css"), tokens);
+writeFileSync(
+  resolve(skill, "theme-omnes.css"),
+  readFileSync(resolve(racine, "src/styles/themes/omnes.css")),
+);

@@ -12,19 +12,29 @@ export function ThemeSwitcher() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [brand, setBrand] = useState<Brand>("neutral");
 
+  // Relit l'état posé sur <html> (il survit à la navigation entre pages).
   useEffect(() => {
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    if (brand === "neutral") delete root.dataset.brand;
-    else root.dataset.brand = brand;
-  }, [theme, brand]);
+    const d = document.documentElement.dataset;
+    setTheme(d.theme === "light" ? "light" : "dark");
+    setBrand(d.brand === "omnes" ? "omnes" : "neutral");
+  }, []);
+
+  const applyTheme = (t: Theme) => {
+    document.documentElement.dataset.theme = t;
+    setTheme(t);
+  };
+  const applyBrand = (b: Brand) => {
+    if (b === "neutral") delete document.documentElement.dataset.brand;
+    else document.documentElement.dataset.brand = b;
+    setBrand(b);
+  };
 
   return (
     <div className="flex items-center gap-2">
       <Button
         size="sm"
         aria-pressed={theme === "light"}
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        onClick={() => applyTheme(theme === "dark" ? "light" : "dark")}
       >
         {theme === "dark" ? <Moon /> : <Sun />}
         {theme === "dark" ? "Sombre" : "Clair"}
@@ -32,7 +42,7 @@ export function ThemeSwitcher() {
       <Button
         size="sm"
         aria-pressed={brand === "omnes"}
-        onClick={() => setBrand(brand === "neutral" ? "omnes" : "neutral")}
+        onClick={() => applyBrand(brand === "neutral" ? "omnes" : "neutral")}
       >
         <Palette />
         {brand === "neutral" ? "Neutre" : "Omnes"}

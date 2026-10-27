@@ -41,17 +41,20 @@ async function attendre() {
 try {
   await attendre();
   const browser = await chromium.launch();
+  const pages = [
+    ["catalogue", "/"],
+    ["tableau-de-bord", "/exemples/tableau-de-bord"],
+    ["liste", "/exemples/liste"],
+    ["detail", "/exemples/detail"],
+  ];
   const cas = [
     ["dark", "neutral", 1440],
     ["light", "neutral", 1440],
     ["dark", "neutral", 375],
     ["light", "neutral", 375],
-    ["dark", "omnes", 1440],
   ];
-  for (const [theme, brand, width] of cas) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
-    await page.goto(`http://localhost:${PORT}/`, { waitUntil: "networkidle" });
-    await page.evaluate(
+  const poser = (page, theme, brand) =>
+    page.evaluate(
       ([t, b]) => {
         document.documentElement.dataset.theme = t;
         if (b === "neutral") delete document.documentElement.dataset.brand;
@@ -59,15 +62,46 @@ try {
       },
       [theme, brand],
     );
-    await page.waitForTimeout(150);
-    const nom = `${brand === "neutral" ? "" : brand + "-"}${theme}-${width}`;
-    await page.screenshot({ path: resolve(sortie, `${nom}.png`), fullPage: true });
-    if (width === 1440 && brand === "neutral") {
-      // Infobulle ouverte par clic sur la 1re icône « i » d'un chiffre clé.
-      await page.locator("#kpi-stat").scrollIntoViewIfNeeded();
-      await page.locator("#kpi-stat button[aria-label='Explication']").first().click();
-      await page.locator("#kpi-stat").screenshot({ path: resolve(sortie, `${nom}-infobulle.png`) });
+  for (const [nomPage, chemin] of pages) {
+    for (const [theme, brand, width] of cas) {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await page.goto(`http://localhost:${PORT}${chemin}`, { waitUntil: "networkidle" });
+      await poser(page, theme, brand);
+      await page.waitForTimeout(200);
+      const nom = `${nomPage}-${theme}-${width}`;
+      await page.screenshot({ path: resolve(sortie, `${nom}.png`), fullPage: true });
+      await page.close();
     }
+  }
+  // Variantes : marque omnes, infobulle ouverte, tiroir ouvert, menu mobile ouvert.
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`http://localhost:${PORT}/exemples/tableau-de-bord`, { waitUntil: "networkidle" });
+    await poser(page, "dark", "omnes");
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: resolve(sortie, "tableau-de-bord-omnes-dark-1440.png"), fullPage: true });
+    await poser(page, "light", "omnes");
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: resolve(sortie, "tableau-de-bord-omnes-light-1440.png"), fullPage: true });
+    await poser(page, "dark", "neutral");
+    await page.locator("main button[aria-label='Explication']").first().click();
+    await page.screenshot({ path: resolve(sortie, "tableau-de-bord-infobulle-dark-1440.png") });
+    await page.close();
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(`http://localhost:${PORT}/exemples/liste`, { waitUntil: "networkidle" });
+    await page.getByRole("row").nth(1).click();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: resolve(sortie, "liste-tiroir-dark-1440.png") });
+    await page.close();
+  }
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 800 } });
+    await page.goto(`http://localhost:${PORT}/exemples/tableau-de-bord`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Ouvrir le menu" }).click();
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: resolve(sortie, "tableau-de-bord-menu-mobile-dark-375.png") });
     await page.close();
   }
   await browser.close();

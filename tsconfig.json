@@ -11,8 +11,10 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": { "graphite-ui": ["./src/index.ts"] },
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "scripts", "vitest.config.ts", "vitest.setup.ts"],
+  "include": ["src", "skills/**/*.tsx", "scripts", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules", "showcase"]
 }

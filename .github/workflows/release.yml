@@ -1,0 +1,25 @@
+name: Release
+
+# Un tag vX.Y.Z crée une release GitHub avec le skill Claude prêt à importer dans claude.ai.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive du skill (dossier graphite-ui/ à la racine du zip)
+        run: |
+          cd skills
+          zip -r "../graphite-ui-skill-${GITHUB_REF_NAME}.zip" graphite-ui
+      - name: Créer la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "graphite-ui-skill-${GITHUB_REF_NAME}.zip" \
+            --title "$GITHUB_REF_NAME" --generate-notes
