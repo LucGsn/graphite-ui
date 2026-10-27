@@ -1,0 +1,36 @@
+/* Thème Tailwind v4 : expose les tokens en classes utilitaires (bg-card, text-muted, text-stat…). */
+@theme inline {
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-sidebar: var(--sidebar);
+  --color-accent: var(--accent);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-faint-60: var(--faint-60);
+  --color-faint-side: var(--faint-side);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-field: var(--field);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-neutral: var(--neutral);
+  --color-danger: var(--danger);
+  --color-chart-green: var(--chart-green);
+  --color-chart-amber: var(--chart-amber);
+  --color-chart-slate: var(--chart-slate);
+  --color-chart-gray: var(--chart-gray);
+  --color-chart-red: var(--chart-red);
+  --color-chart-band: var(--chart-band);
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius-md);
+  --text-stat: 30px;
+  --text-stat--line-height: 1;
+  --text-stat--font-weight: 600;
+  --text-stat--letter-spacing: -0.75px;
+  --text-micro: 10px;
+}

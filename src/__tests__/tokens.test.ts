@@ -1,0 +1,130 @@
+import { execFileSync } from "node:child_process";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { describe, expect, it } from "vitest";
+import { contrast } from "./color";
+
+const RACINE = resolve(__dirname, "..", "..");
+const tokens = JSON.parse(readFileSync(join(RACINE, "tokens/tokens.json"), "utf8")) as {
+  themes: Record<"dark" | "light", Record<string, string>>;
+  brands: Record<string, Record<"dark" | "light", Record<string, string>>>;
+};
+
+// Thèmes à contrôler : neutre sombre/clair + chaque marque (jetons de marque posés sur le thème neutre).
+const THEMES: [string, Record<string, string>][] = [
+  ["dark", tokens.themes.dark],
+  ["light", tokens.themes.light],
+  ...Object.entries(tokens.brands).flatMap(([nom, b]) =>
+    (["dark", "light"] as const).map((mode): [string, Record<string, string>] => [
+      `${nom}/${mode}`,
+      { ...tokens.themes[mode], ...b[mode] },
+    ]),
+  ),
+];
+
+describe("tokens de référence (Paperclip, sombre)", () => {
+  const d = tokens.themes.dark;
+  it("reprend les valeurs mesurées, en gris purs", () => {
+    expect(d.background).toBe("oklch(20.5% 0 0)");
+    expect(d.sidebar).toBe("oklch(26.9% 0 0)");
+    expect(d.accent).toBe("oklch(32% 0 0)");
+    expect(d.foreground).toBe("oklch(98.5% 0 0)");
+    expect(d.muted).toBe("oklch(70.8% 0 0)");
+    expect(d.border).toBe("oklch(100% 0 0 / 0.1)");
+    expect(d.input).toBe("oklch(100% 0 0 / 0.15)");
+    expect(d.field).toBe("oklab(1 0 0 / 0.045)");
+  });
+
+  it("garde le cœur neutre : surfaces et textes à chroma 0", () => {
+    for (const [nom, t] of THEMES.slice(0, 2))
+      for (const k of ["background", "card", "sidebar", "accent", "foreground", "muted", "primary", "border"])
+        expect(t[k], `${nom}/${k}`).toMatch(/^oklch\([\d.]+% 0 0( \/ [\d.]+)?\)$/);
+  });
+});
+
+describe("contraste ≥ 4,5:1 (WCAG AA)", () => {
+  for (const [nom, t] of THEMES) {
+    it(`${nom} : textes sur surfaces`, () => {
+      const cas: [string, string, string?][] = [
+        ["foreground", "background"],
+        ["muted", "background"],
+        ["faint", "background"],
+        ["faint-60", "background"],
+        ["foreground", "card"],
+        ["muted", "card"],
+        ["foreground", "sidebar"],
+        ["muted", "sidebar"],
+        ["faint-side", "sidebar"],
+        ["foreground", "accent"],
+        ["primary-foreground", "primary"],
+        ["foreground", "field", "background"],
+        ["muted", "field", "background"],
+      ];
+      for (const [fg, bg, under] of cas) {
+        const ratio = contrast(t[fg], t[bg], under ? t[under] : undefined);
+        expect(ratio, `${nom} : ${fg} sur ${bg} = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+      }
+    });
+  }
+});
+
+describe("thèmes de marque", () => {
+  it("ne changent que quelques tokens (≤ 6 par mode)", () => {
+    for (const [nom, b] of Object.entries(tokens.brands))
+      for (const mode of ["dark", "light"] as const) {
+        const cles = Object.keys(b[mode]).filter((k) => !k.startsWith("$"));
+        expect(cles.length, `${nom}/${mode}`).toBeLessThanOrEqual(6);
+        for (const k of cles) expect(tokens.themes[mode], `${nom}/${mode}/${k}`).toHaveProperty(k);
+      }
+  });
+});
+
+describe("génération", () => {
+  it("tokens.css et themes/*.css sont à jour avec tokens.json", () => {
+    const lire = () =>
+      [
+        "src/styles/tokens.css",
+        ...readdirSync(join(RACINE, "src/styles/themes")).map((f) => `src/styles/themes/${f}`),
+      ].map((f) => readFileSync(join(RACINE, f), "utf8"));
+    const avant = lire();
+    execFileSync(process.execPath, [join(RACINE, "scripts/build-tokens.mjs")], { cwd: RACINE });
+    expect(lire()).toEqual(avant);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Aucune couleur en dur hors des tokens.
+// ---------------------------------------------------------------------------
+function fichiers(dossier: string, sortie: string[] = []): string[] {
+  for (const nom of readdirSync(dossier)) {
+    if (nom === "node_modules" || nom === ".next") continue;
+    const p = join(dossier, nom);
+    if (statSync(p).isDirectory()) fichiers(p, sortie);
+    else if (/\.tsx?$/.test(nom) && !/\.test\.tsx?$/.test(nom) && nom !== "color.ts") sortie.push(p);
+  }
+  return sortie;
+}
+const SOURCES = [...fichiers(join(RACINE, "src")), ...fichiers(join(RACINE, "showcase"))];
+
+describe("discipline des couleurs", () => {
+  it("aucune couleur en dur (hex, rgb, hsl) hors des tokens", () => {
+    const fautifs = SOURCES.filter((f) =>
+      /#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b(?![\w-])|rgba?\(|hsla?\(/.test(readFileSync(f, "utf8")),
+    );
+    expect(fautifs).toEqual([]);
+  });
+
+  it("aucune couleur Tailwind brute (slate-500, blue-600…)", () => {
+    const re =
+      /\b(?:text|bg|border|ring|from|to|fill|stroke)-(?:blue|violet|purple|indigo|sky|cyan|teal|emerald|green|red|amber|orange|yellow|pink|rose|slate|zinc|gray|neutral|stone)-\d/;
+    expect(SOURCES.filter((f) => re.test(readFileSync(f, "utf8")))).toEqual([]);
+  });
+
+  it("aucun texte sous 10 px", () => {
+    const fautifs: string[] = [];
+    for (const f of SOURCES)
+      for (const m of readFileSync(f, "utf8").matchAll(/text-\[(\d+(?:\.\d+)?)px\]/g))
+        if (Number(m[1]) < 10) fautifs.push(`${f} : ${m[0]}`);
+    expect(fautifs).toEqual([]);
+  });
+});

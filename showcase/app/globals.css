@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "../../src/styles/index.css";
+@import "../../src/styles/themes/omnes.css";
+
+/* Tailwind doit aussi scanner les composants du paquet. */
+@source "../../src";
