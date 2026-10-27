@@ -158,6 +158,7 @@ npm run shots:onboarding   # parcours d'onboarding : captures + contrôle axe (c
 1. Passer la version à `X.Y.Z` dans `package.json`, `showcase/package.json` et `package-lock.json` (les deux lignes `version` du lockfile), ajouter l'entrée du [CHANGELOG](CHANGELOG.md), ouvrir une PR vers `main`, CI verte, fusionner.
 2. GitHub → **Actions → Release → Run workflow** (branche `main`), saisir `X.Y.Z`.
 3. Le workflow vérifie que la version est celle de `package.json`, publie `@lucgsn/graphite-ui@X.Y.Z` sur GitHub Packages, crée le tag `vX.Y.Z` et la release avec le zip du skill (`graphite-ui-skill-vX.Y.Z.zip`). Une version déjà publiée n'est jamais republiée.
+4. Contrôle facultatif : **Actions → Verify install → Run workflow** installe le paquet publié dans une app Next.js vierge, la construit et vérifie l'affichage, avec le jeton intégré du workflow (aucun jeton personnel). En local : `NPM_TOKEN=<jeton read:packages> npm run verify:install`.
 
 ## Déployer la vitrine sur Vercel
 
