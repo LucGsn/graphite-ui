@@ -50,11 +50,11 @@
   --input: oklch(0% 0 0 / 0.15);
   --field: oklab(0 0 0 / 0.045);
   --success: #16a34a;
-  --warning: #d97706;
+  --warning: #c76a06;
   --neutral: oklch(55% 0 0);
   --danger: oklch(55% 0.22 25.33);
   --chart-green: #16a34a;
-  --chart-amber: #d97706;
+  --chart-amber: #c76a06;
   --chart-slate: #475569;
   --chart-gray: #737373;
   --chart-red: oklch(55% 0.22 25.33);
