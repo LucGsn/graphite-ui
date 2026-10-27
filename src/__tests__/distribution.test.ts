@@ -89,6 +89,18 @@ describe("workflow de release", () => {
   });
 });
 
+describe("workflow de vérification d'installation", () => {
+  const wf = lire(".github/workflows/verify-install.yml");
+
+  it("se lance à la main, en lecture seule, avec le jeton intégré (aucun jeton personnel)", () => {
+    expect(wf).toContain("workflow_dispatch:");
+    expect(wf).toMatch(/permissions:\s*\n\s+contents: read\s*\n\s+packages: read/);
+    expect(wf).toContain("NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}");
+    expect(wf).not.toMatch(/secrets\.(?!GITHUB_TOKEN)\w+/);
+    expect(wf).toContain("node scripts/verify-install.mjs");
+  });
+});
+
 describe("documentation d'installation privée", () => {
   const readme = lire("README.md");
   const skill = lire("skills/graphite-ui/SKILL.md");
