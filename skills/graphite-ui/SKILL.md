@@ -20,10 +20,15 @@ Design system neutre pour apps internes et projets personnels. Cœur gris pur + 
 
 ## 2. Mettre en place dans une app Next.js (Tailwind v4)
 
-1. Installer depuis le dépôt Git (jamais depuis le registre npm : le nom y est pris par un autre paquet) :
-   ```bash
-   npm install github:LucGsn/graphite-ui#vX.Y.Z recharts
+1. Installer depuis GitHub Packages (registre npm **privé** ; jamais depuis le registre npm public, où le nom `graphite-ui` est pris par un autre paquet). Il faut un `.npmrc` sans jeton et la variable `NPM_TOKEN` (jeton classic `read:packages`, aussi posée dans chaque projet Vercel) :
+   ```ini
+   @lucgsn:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=${NPM_TOKEN}
    ```
+   ```bash
+   npm install graphite-ui@npm:@lucgsn/graphite-ui@X.Y.Z recharts
+   ```
+   L'alias garde les imports en `"graphite-ui"` (sans alias : `@lucgsn/graphite-ui` partout). Ne jamais écrire un jeton dans un fichier ; procédure complète : README du dépôt, « Installer (dépôt et paquet privés) ».
 2. `next.config.ts` : `transpilePackages: ["graphite-ui"]` (le paquet est livré en TypeScript).
 3. `app/globals.css` :
    ```css

@@ -1,0 +1,6 @@
+# À copier en `.npmrc` à la racine du projet qui CONSOMME @lucgsn/graphite-ui (et à versionner : il ne contient aucun jeton).
+# Le jeton vient de la variable d'environnement NPM_TOKEN : poste-la en local (~/.zshrc, hors dépôt) et dans
+# chaque projet Vercel (Settings → Environment Variables, pour Production, Preview ET Development).
+# Jeton : GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic), droit read:packages SEUL.
+@lucgsn:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NPM_TOKEN}

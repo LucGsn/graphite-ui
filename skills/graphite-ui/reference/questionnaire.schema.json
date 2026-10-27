@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/LucGsn/graphite-ui/blob/main/src/lib/questionnaire/questionnaire.schema.json",
+  "$id": "urn:lucgsn:graphite-ui:questionnaire:1",
   "title": "Questionnaire graphite-ui (version 1)",
   "description": "Contrat d'un questionnaire affichable directement par OnboardingShell / QuestionnaireRenderer. Règles que le schéma seul ne peut pas exprimer (vérifiées par validateQuestionnaire) : identifiants uniques dans tout le document ; une condition showIf ne vise que des questions placées avant ; valeurs de condition cohérentes avec les options et le type de la question visée ; max > min pour une échelle ; maxChoices ≤ nombre de choix.",
   "type": "object",
