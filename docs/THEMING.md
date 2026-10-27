@@ -47,19 +47,20 @@ Créer un fichier CSS dans l'app, importé après `graphite-ui/styles.css` :
 
 Vérifier le contraste de `--primary-foreground` sur `--primary` (≥ 4,5:1, par exemple avec la fonction `contrast` de `src/__tests__/color.ts`).
 
-## Dériver un thème clair
+## Le thème clair
 
-Le thème clair est dérivé du sombre, rôle par rôle :
+Le thème clair (blanc chaud très subtil, façon Notion) reprend les mêmes rôles que le sombre :
 
-| Rôle                      | Règle de dérivation                                                                                             |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Fond, carte               | luminance 98,5 % (le texte sombre y tient largement)                                                            |
-| Barre latérale, accent    | 96 % et 92 % (même écart relatif qu'en sombre)                                                                  |
-| Texte                     | 20,5 % (l'ancien fond)                                                                                          |
-| Gris secondaire (`muted`) | **44 %**, pas 29,2 % (l'inverse de 70,8 %) : le miroir exact ne tient pas 4,5:1 sur fond clair une fois mélangé |
-| Gris atténués             | `muted` à 90–94 % d'opacité                                                                                     |
-| Bordures, champs          | noir 10 % / 15 % / 4,5 % (l'inverse du blanc)                                                                   |
-| Statuts, séries           | teintes assombries pour rester lisibles sur clair                                                               |
+| Rôle                              | Valeur                                     | Règle                                                                   |
+| --------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
+| Page (`background`)               | `#FBFBFA`                                  | chroma ≤ 0,01                                                           |
+| Cartes (`card`)                   | `#FFFFFF`                                  | blanc pur : la carte se distingue de la page                            |
+| Barre latérale                    | `#F7F6F3`                                  | chroma ≤ 0,01                                                           |
+| Menu actif, boutons, bouton plein | gris purs (chroma 0)                       | jamais beiges                                                           |
+| Texte / secondaire                | `#37352F` / `#6B6A66`                      | ≥ 4,5:1 sur page, cartes, barre latérale, menu actif, boutons et badges |
+| Bordures, champs                  | noir 9 % / 14 % / 4,5 %                    | décoratifs : le libellé identifie le contrôle                           |
+| Bande d'incertitude               | noir 7 %                                   | gris clair translucide                                                  |
+| Statuts, séries                   | teintes assombries (`#16a34a`, `#c76a06`…) | ≥ 3:1 sur page et cartes                                                |
 
 Toujours **mesurer** : `npm test` calcule le contraste réel (mélange alpha en sRGB, comme un navigateur).
 

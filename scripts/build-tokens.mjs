@@ -56,15 +56,3 @@ writeFileSync(
   resolve(skill, "theme-omnes.css"),
   readFileSync(resolve(racine, "src/styles/themes/omnes.css")),
 );
-
-// Propositions de thème clair (vitrine uniquement) : [data-theme="light"][data-palette="a|b|c"].
-import { existsSync } from "node:fs";
-const fichierPalettes = resolve(racine, "tokens/light-palettes.json");
-if (existsSync(fichierPalettes)) {
-  const palettes = JSON.parse(readFileSync(fichierPalettes, "utf8"));
-  const blocs = Object.entries(palettes)
-    .filter(([k]) => !k.startsWith("$"))
-    .map(([nom, p]) => `[data-theme="light"][data-palette="${nom}"] {\n${vars(p)}\n}`)
-    .join("\n\n");
-  writeFileSync(resolve(racine, "showcase/app/palettes.css"), `${entete}\n${blocs}\n`);
-}

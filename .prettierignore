@@ -5,4 +5,3 @@ package-lock.json
 src/styles/tokens.css
 src/styles/themes
 skills/graphite-ui/tokens
-showcase/app/palettes.css

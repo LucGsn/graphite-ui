@@ -35,19 +35,19 @@
 
 [data-theme="light"] {
   color-scheme: light;
-  --background: oklch(98.5% 0 0);
-  --card: oklch(98.5% 0 0);
-  --sidebar: oklch(96% 0 0);
-  --accent: oklch(92% 0 0);
-  --foreground: oklch(20.5% 0 0);
-  --muted: oklch(44% 0 0);
-  --faint: oklch(44% 0 0 / 0.92);
-  --faint-60: oklch(44% 0 0 / 0.9);
-  --faint-side: oklch(44% 0 0 / 0.94);
+  --background: #FBFBFA;
+  --card: #FFFFFF;
+  --sidebar: #F7F6F3;
+  --accent: oklch(94% 0 0);
+  --foreground: #37352F;
+  --muted: #6B6A66;
+  --faint: #6B6A66;
+  --faint-60: #6B6A66;
+  --faint-side: #6B6A66;
   --primary: oklch(26.9% 0 0);
   --primary-foreground: oklch(98.5% 0 0);
-  --border: oklch(0% 0 0 / 0.1);
-  --input: oklch(0% 0 0 / 0.15);
+  --border: oklch(0% 0 0 / 0.09);
+  --input: oklch(0% 0 0 / 0.14);
   --field: oklab(0 0 0 / 0.045);
   --success: #16a34a;
   --warning: #c76a06;
@@ -58,5 +58,5 @@
   --chart-slate: #475569;
   --chart-gray: #737373;
   --chart-red: oklch(55% 0.22 25.33);
-  --chart-band: oklch(0% 0 0 / 0.04);
+  --chart-band: oklch(0% 0 0 / 0.07);
 }
