@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "id": "atelier-demo",
+  "title": "Préparer votre espace de travail",
+  "description": "Questionnaire fictif de démonstration : il utilise les huit types de questions.",
+  "sections": [
+    {
+      "id": "profil",
+      "title": "Vous",
+      "description": "Quelques questions pour adapter l'espace à votre façon de travailler.",
+      "questions": [
+        {
+          "id": "prenom",
+          "type": "short",
+          "label": "Comment vous appelez-vous ?",
+          "required": true,
+          "placeholder": "Votre prénom",
+          "maxLength": 40
+        },
+        {
+          "id": "role",
+          "type": "single",
+          "label": "Quel est votre rôle ?",
+          "required": true,
+          "display": "chips",
+          "options": [
+            { "value": "design", "label": "Design" },
+            { "value": "dev", "label": "Développement" },
+            { "value": "produit", "label": "Produit" },
+            { "value": "gestion", "label": "Gestion d'équipe" }
+          ],
+          "allowOther": { "label": "Autre rôle", "placeholder": "Votre rôle" }
+        },
+        {
+          "id": "experience",
+          "type": "single",
+          "label": "Quelle est votre aisance avec ce type d'outil ?",
+          "help": "Il n'y a pas de mauvaise réponse : cela règle seulement le niveau d'aide proposé.",
+          "required": true,
+          "display": "cards",
+          "options": [
+            { "value": "debutant", "label": "Débutant", "description": "Je découvre", "icon": "seed" },
+            {
+              "value": "confirme",
+              "label": "Confirmé",
+              "description": "Je m'en sers chaque semaine",
+              "icon": "gauge"
+            },
+            { "value": "expert", "label": "Expert", "description": "Je forme les autres", "icon": "star" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "equipe",
+      "title": "Votre équipe",
+      "questions": [
+        {
+          "id": "taille-equipe",
+          "type": "number",
+          "label": "Combien de personnes dans votre équipe ?",
+          "required": true,
+          "min": 1,
+          "max": 500,
+          "step": 1,
+          "unit": "personnes"
+        },
+        {
+          "id": "mode-travail",
+          "type": "single",
+          "label": "Où travaille l'équipe ?",
+          "options": [
+            { "value": "presentiel", "label": "Sur site" },
+            { "value": "hybride", "label": "Hybride" },
+            { "value": "distance", "label": "À distance" }
+          ]
+        },
+        {
+          "id": "outils",
+          "type": "multiple",
+          "label": "Quels outils utilisez-vous déjà ?",
+          "help": "Trois choix au plus.",
+          "required": true,
+          "maxChoices": 3,
+          "options": [
+            { "value": "docs", "label": "Documents partagés", "icon": "file" },
+            { "value": "messagerie", "label": "Messagerie", "icon": "chat" },
+            { "value": "tableur", "label": "Tableurs", "icon": "table" },
+            { "value": "tickets", "label": "Suivi de tickets", "icon": "list" }
+          ],
+          "allowOther": true
+        },
+        {
+          "id": "satisfaction",
+          "type": "scale",
+          "label": "Ces outils vous conviennent-ils ?",
+          "min": 1,
+          "max": 5,
+          "minLabel": "Pas du tout",
+          "maxLabel": "Tout à fait",
+          "showIf": { "question": "outils", "notEmpty": true }
+        },
+        {
+          "id": "coordination",
+          "type": "long",
+          "label": "Comment l'équipe se coordonne-t-elle à distance ?",
+          "placeholder": "Réunions, notes partagées, messages…",
+          "maxLength": 400,
+          "showIf": {
+            "all": [
+              { "question": "taille-equipe", "gt": 5 },
+              { "question": "mode-travail", "in": ["hybride", "distance"] }
+            ]
+          }
+        },
+        {
+          "id": "accompagnement",
+          "type": "single",
+          "label": "Souhaitez-vous un accompagnement pour la prise en main ?",
+          "options": [
+            { "value": "oui", "label": "Oui, volontiers" },
+            { "value": "non", "label": "Non, merci" }
+          ],
+          "showIf": {
+            "any": [
+              { "question": "experience", "equals": "debutant" },
+              { "question": "satisfaction", "lt": 3 }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "demarrage",
+      "title": "Démarrage",
+      "questions": [
+        {
+          "id": "date-demarrage",
+          "type": "date",
+          "label": "À quelle date voulez-vous démarrer ?",
+          "required": true,
+          "min": "2026-01-01",
+          "max": "2027-12-31"
+        },
+        {
+          "id": "priorites",
+          "type": "ranking",
+          "label": "Classez vos priorités",
+          "help": "Du plus important au moins important.",
+          "required": true,
+          "options": [
+            { "value": "temps", "label": "Gagner du temps" },
+            { "value": "qualite", "label": "Améliorer la qualité" },
+            { "value": "cout", "label": "Réduire les coûts" },
+            { "value": "autonomie", "label": "Gagner en autonomie" }
+          ]
+        }
+      ]
+    }
+  ]
+}

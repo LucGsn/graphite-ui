@@ -18,8 +18,8 @@ Props et pièges : [skills/graphite-ui/reference/components.md](skills/graphite-
 Le dépôt est privé : l'accès Git doit être configuré (`gh auth login`, ou une clé SSH). L'installation se fait **depuis Git, avec une version taguée** — jamais depuis le registre npm, où le nom `graphite-ui` appartient à un autre paquet.
 
 ```bash
-npm install github:LucGsn/graphite-ui#v0.2.0 recharts
-# ou, en SSH : npm install git+ssh://git@github.com/LucGsn/graphite-ui.git#v0.2.0 recharts
+npm install github:LucGsn/graphite-ui#v0.3.0 recharts
+# ou, en SSH : npm install git+ssh://git@github.com/LucGsn/graphite-ui.git#v0.3.0 recharts
 ```
 
 `recharts` n'est nécessaire que pour `BarChart` et `LineChart`.
@@ -83,6 +83,10 @@ Dans un composant **serveur**, ne pas passer de fonction à un composant client 
 
 **Mettre à jour** : changer le tag dans `package.json` (`#v0.3.0`), puis `npm install`. Les versions sont des tags Git `vX.Y.Z` ; chaque tag crée une release GitHub (avec le zip du skill).
 
+## Onboarding et questionnaires
+
+Un questionnaire se décrit en JSON (contrat versionné, huit types de questions, affichage conditionnel) et s'affiche avec `OnboardingShell` : une question ou une section par écran, écrans personnalisés, enregistrement et reprise, récapitulatif, écran de fin. Le contrat et sa validation s'importent sans React : `import { validateQuestionnaire } from "graphite-ui/questionnaire"`. Aucun appel à une IA dans le paquet : une IA peut générer le document, `validateQuestionnaire` dit s'il est conforme (voir le skill). Démonstration : `/onboarding` dans la vitrine.
+
 ## Skill Claude
 
 Le dossier `skills/graphite-ui/` contient `SKILL.md`, les tokens (`tokens/`), une référence des composants et trois pages d'exemple (`examples/`). Il est autonome.
@@ -99,6 +103,7 @@ npm test           # rendu des composants, contraste ≥ 4,5:1, aucune couleur e
 npm run lint && npm run typecheck && npm run build
 npm run tokens     # régénère les CSS (et les copies du skill) depuis tokens/tokens.json
 npm run shots      # captures sombre/clair × 1440/375 dans docs/captures (après build)
+npm run shots:onboarding   # parcours d'onboarding : captures + contrôle axe (contraste compris)
 ```
 
 `tokens/tokens.json` est la source unique : `npm run tokens` en génère `src/styles/tokens.css`, `src/styles/themes/*.css` et les copies du skill ; un test échoue si l'un d'eux est périmé.
