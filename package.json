@@ -1,6 +1,6 @@
 {
   "name": "graphite-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Design system neutre (gris purs, couleur réservée aux statuts et aux données) : tokens, composants React, skill Claude.",
   "private": true,
   "type": "module",
